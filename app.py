@@ -31,7 +31,12 @@ activetab = ""
 # getting all of the data
 # alldata = maindataobject.read_file()
 
-global dfs, maindataobject, starttime, endtime, validlengthofdata
+global dfs, maindataobject, starttime, endtime, validlengthofdata, tabCount, fileloaded
+
+fileloaded = False
+tabCount = 0
+
+validlengthofdata = False
 starttime = endtime = ""
 # global dfs
 # dfs = maindataobject.createDictionary(sheet_names)
@@ -118,6 +123,7 @@ app.layout = html.Div(
                                 "Upload File",
                                 className="uploadbutton",
                             ),
+                            accept=".xlsx",
                             id="upload",
                         ),
                         html.Div(
@@ -798,8 +804,11 @@ def updateUi(children):
     [State("upload", "filename")],
 )
 def store_uploaded_file(contents, filename):
-    global dfs, maindataobject, starttime, endtime, validlengthofdata
-
+    global dfs, maindataobject, starttime, endtime, validlengthofdata, tabsname, grapharray, tabCount, fileloaded
+    tabsname.clear()
+    grapharray.clear()
+    tabCount = 0
+    
     # print(contents)
     if contents is not None:
         chosen_file = contents  # Update chosen_file with uploaded content
@@ -846,6 +855,7 @@ def store_uploaded_file(contents, filename):
         starttime, endtime = maindataobject.getstartandenddate()
         makeColumns4567()
         validlengthofdata = maindataobject.validlengthforprediction()
+        fileloaded = True
         return filename, None
 
 
@@ -887,7 +897,7 @@ def store_uploaded_file(contents, filename):
     Input(component_id="higher-end-filter", component_property="value"),
 )
 def check_value(*args):
-    global start, end, starttime, endtime, validlengthforprediction
+    global start, end, starttime, endtime, validlengthforprediction, fileloaded
     error_messages = ""
     differentgraphs = args[2:5]
 
@@ -978,7 +988,7 @@ def check_value(*args):
             + str(endtime.date())
             + " or below! "
         )
-    elif validlengthofdata is False:
+    elif validlengthofdata is False and fileloaded is True:
         error_messages += "Cannot generate prediction. Data must be atleast a day long"
 
     return error_messages
@@ -1607,10 +1617,6 @@ def createProductivityArray(
         productivityarray.append(count)
         timearray.append(startime)
     return productivityarray, timearray
-
-
-global tabCount
-tabCount = 0
 
 
 def lineGraphProductivity(data_dict: Dict[str, List[int]], timearray: List):
