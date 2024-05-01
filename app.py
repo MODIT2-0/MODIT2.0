@@ -22,14 +22,6 @@ import io
 tabsname = deque()
 grapharray = deque()
 activetab = ""
-# creating main data object
-# maindataobject = Data()
-
-# asking for input file
-# maindataobject.askforinputfile()
-# alldata = "sa"
-# getting all of the data
-# alldata = maindataobject.read_file()
 
 global dfs, maindataobject, starttime, endtime, validlengthofdata, tabCount, fileloaded
 
@@ -38,9 +30,6 @@ tabCount = 0
 
 validlengthofdata = False
 starttime = endtime = ""
-# global dfs
-# dfs = maindataobject.createDictionary(sheet_names)
-# makeColumns4567()
 starttime, endtime = "", ""
 
 timeHours = [
@@ -80,10 +69,6 @@ dropLowerThan = [
 ]
 
 dropHigherThan = ["1 hr", "30 min", "15 min", "10 min", "5 min"]
-
-# error_messages = dcc.Store(id='error-messages', storage_type='memory'),
-# interval = dcc.Interval(id='error-interval', interval=1000, n_intervals=0),
-# error_container = html.Div(id='error-container', style={'display': 'none'}),
 
 
 app = Dash(__name__)
@@ -1327,38 +1312,6 @@ def update_graph(*args):
 
     graphtype = ""
 
-    # Check if only 1 day is selected and start time is not more than end time
-    # if startDate == endDate:
-    #     if int(startTime) > int(endTime):
-    #         error_messages.append("Start date must be before end date")
-
-    # Check if selected date is not in the input file
-    # for name in sheet_names:
-    #     if startDate not in dfs[name][0] or endDate not in dfs[name][0]:
-    #         error_messages.append(f'Selected date range is not available in the input file for {name}.')
-
-    # Check if some filters are not chosen
-    # if listOfNames is None:
-    #     error_messages.append("Machine not selected")
-    # if startDate is None:
-    #     error_messages.append("Start date must be selected")
-    # if endDate is None:
-    #     error_messages.append("End date must be selected")
-    # if startTime is None:
-    #     error_messages.append("Start time must be selected")
-    # if endTime is None:
-    #     error_messages.append("End time must be selected")
-    # if content is None:
-    #     error_messages.append("Select Graph Content")
-    # if graphtype is None:
-    #     error_messages.append("Select Graph type")
-
-    #
-    # @callback(Output(component_id="tabs", component_property="children"),
-    #           Input("error_messages")
-    #
-    # )
-
     if ctx.triggered_id == "deleteall":
         tabsname.clear()
         grapharray.clear()
@@ -1455,10 +1408,6 @@ def update_graph(*args):
 
         # if bargraph
         if graphtype == "bargraph":
-            # dataframearrays = []
-            # for keys, values in checked_data.items():
-            #     dataframearrays.append(createsingledataframes(values))
-            # createbargraphs(dataframearrays)
             createGraph(
                 "bar",
                 "productiveCount",
@@ -1476,11 +1425,6 @@ def update_graph(*args):
             return a, None
         # if histogram
         if graphtype == "histogram":
-            # dataframearrays = []
-            # for keys, values in checked_data.items():
-            #     dataframearrays.append(createsingledataframes(values))
-
-            # createhistogramgraphs(dataframearrays)
             createGraph(
                 "histo",
                 "productiveCount",
@@ -1536,12 +1480,8 @@ def update_tabs():
     return updated_tabs
 
 
-#
+##Code for Graphing begins
 ############################################################################################################################################################
-############################################################################################################################################################
-############################################################################################################################################################
-############################################################################################################################################################
-
 
 sheet_names = [
     "ST10A",
@@ -1615,7 +1555,7 @@ def createProductivityArray(
         # IF COUNT ==0 THEN SKIP
 
         productivityarray.append(count)
-        timearray.append(startime)
+        timearray.append(secondtime)
     return productivityarray, timearray
 
 
@@ -1675,8 +1615,8 @@ def lineGraphRates(data_dict: Dict[str, List[int]], timearray: List):
 
     fig.update_layout(
         xaxis_title="Hour",
-        yaxis_title="Rate per Hour",
-        title="Rate of Production vs Hours",
+        yaxis_title="Rate per Interval (%)",
+        title="Rate of Production",
         hovermode="closest",
         height=700,
         xaxis=dict(title_font=dict(size=18), tickfont=dict(size=14)),
@@ -1954,11 +1894,6 @@ def createGraph(
 
 
 ###########################################################################################################################################################
-###########################################################################################################################################################
-###########################################################################################################################################################
-###########################################################################################################################################################
-###########################################################################################################################################################
-###########################################################################################################################################################
 
 
 def predict_graph(checked_data):
@@ -2020,7 +1955,7 @@ def predict_graph(checked_data):
         yaxis_title="Rate per Hour",
         title="Prediction",
         hovermode="closest",
-        # height=700,
+        height=700,
         xaxis=dict(title_font=dict(size=18), tickfont=dict(size=14)),
         yaxis=dict(title_font=dict(size=18), tickfont=dict(size=14)),
         title_font=dict(size=24),
