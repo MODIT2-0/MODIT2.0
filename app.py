@@ -989,7 +989,7 @@ def check_value(*args):
             + " or below! "
         )
     elif validlengthofdata is False and fileloaded is True:
-        error_messages += "Cannot generate prediction. Data must be atleast a day long"
+        error_messages += "Cannot generate prediction. Data must be at least a day long"
 
     return error_messages
 
