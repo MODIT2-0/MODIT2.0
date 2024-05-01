@@ -793,7 +793,7 @@ def store_uploaded_file(contents, filename):
     tabsname.clear()
     grapharray.clear()
     tabCount = 0
-    
+
     # print(contents)
     if contents is not None:
         chosen_file = contents  # Update chosen_file with uploaded content
@@ -975,6 +975,10 @@ def check_value(*args):
         )
     elif validlengthofdata is False and fileloaded is True:
         error_messages += "Cannot generate prediction. Data must be at least a day long"
+    elif (
+        ctx.triggered_id == "graphbutton" or ctx.triggered_id == "predictbutton"
+    ) and fileloaded is False:
+        error_messages += "Please upload a file first!"
 
     return error_messages
 
@@ -1240,7 +1244,7 @@ def tes(value):
     prevent_initial_call=True,
 )
 def update_graph(*args):
-    global tabsname, grapharray, tabCount, activetab, validlengthforprediction
+    global tabsname, grapharray, tabCount, activetab, validlengthforprediction, fileloaded
 
     # selecting arguments: they will be in order as in the callback function
     differentgraphs = args[4:7]
@@ -1347,7 +1351,7 @@ def update_graph(*args):
 
     # if user hits graphbutton
 
-    if ctx.triggered_id == "graphbutton":
+    if ctx.triggered_id == "graphbutton" and fileloaded is True:
         for j, checked in enumerate(differentgraphs):
             if checked:
                 graphtype = checked_graphs[j]
@@ -1440,7 +1444,7 @@ def update_graph(*args):
 
             a = update_tabs()
             return a, None
-    elif ctx.triggered_id == "predictbutton" and validlengthofdata is True:
+    elif ctx.triggered_id == "predictbutton" and validlengthofdata is True and fileloaded is True:
         # if user hits predict button
         predict_graph(checked_data)
         a = update_tabs()
@@ -2012,7 +2016,7 @@ def plot_moving_average(x_values: list, y_values: list, window_size: int, a):
         legend=dict(yanchor="top", y=0.99, xanchor="right", x=0.99),
         showlegend=True,
         hovermode="closest",
-        # height=700,
+        height=700,
         xaxis=dict(title_font=dict(size=18), tickfont=dict(size=14)),
         yaxis=dict(title_font=dict(size=18), tickfont=dict(size=14)),
         title_font=dict(size=24),
