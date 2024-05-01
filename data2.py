@@ -7,7 +7,6 @@ class Data:
     def __init__(self):
         pass
 
-
     def load_data(self, data):
 
         self.alldata = data
@@ -52,7 +51,6 @@ class Data:
         # INITIALIZING AN ARRAY
         self.productivityarray = []
         self.timearray = []
-   
 
         while startime < endtime:
 
@@ -85,7 +83,7 @@ class Data:
     global dfs
 
     def createDictionary(self, sheet_names):
-        
+
         return self.alldata
 
     def create_dataframeforsinglemachine(self, key):
@@ -116,3 +114,7 @@ class Data:
         endtime = data.iloc[len(data) - 1, 0]
 
         return [startime, endtime]
+    def validlengthforprediction(self):
+        self.get_productivity_count(self.alldata["ST10A"], "ST10A")
+
+        return len(self.productivityarray)>48
