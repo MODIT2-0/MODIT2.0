@@ -31,7 +31,7 @@ activetab = ""
 # getting all of the data
 # alldata = maindataobject.read_file()
 
-global dfs, maindataobject, starttime, endtime
+global dfs, maindataobject, starttime, endtime, validlengthofdata
 starttime = endtime = ""
 # global dfs
 # dfs = maindataobject.createDictionary(sheet_names)
@@ -536,7 +536,7 @@ app.layout = html.Div(
                                             id="graph-content-filter",
                                             options=[
                                                 {
-                                                    "label": "Cycle Count",
+                                                    "label": "Throughput",
                                                     "value": "Cycle Count",
                                                 },
                                                 {
@@ -798,7 +798,7 @@ def updateUi(children):
     [State("upload", "filename")],
 )
 def store_uploaded_file(contents, filename):
-    global dfs, maindataobject, starttime, endtime
+    global dfs, maindataobject, starttime, endtime, validlengthofdata
 
     # print(contents)
     if contents is not None:
@@ -845,6 +845,7 @@ def store_uploaded_file(contents, filename):
         maindataobject.load_data(dfs)
         starttime, endtime = maindataobject.getstartandenddate()
         makeColumns4567()
+        validlengthofdata = maindataobject.validlengthforprediction()
         return filename, None
 
 
@@ -886,7 +887,7 @@ def store_uploaded_file(contents, filename):
     Input(component_id="higher-end-filter", component_property="value"),
 )
 def check_value(*args):
-    global start, end, starttime, endtime
+    global start, end, starttime, endtime, validlengthforprediction
     error_messages = ""
     differentgraphs = args[2:5]
 
@@ -977,6 +978,8 @@ def check_value(*args):
             + str(endtime.date())
             + " or below! "
         )
+    elif validlengthofdata is False:
+        error_messages += "Cannot generate prediction. Data must be atleast a day long"
 
     return error_messages
 
@@ -985,18 +988,37 @@ def check_value(*args):
     [
         Output(component_id="bargraph", component_property="checked"),
         Output(component_id="histogram", component_property="checked"),
-        Output(component_id="linegraph", component_property="checked"),
+        Output(component_id="bargraph", component_property="disabled"),
+        Output(component_id="histogram", component_property="disabled"),
+        Output(component_id="bargraphimg", component_property="opacity"),
+        Output(component_id="bargraphimg", component_property="src"),
+        Output(component_id="histogramimg", component_property="opacity"),
+        Output(component_id="histogramimg", component_property="src"),
     ],
     Input(component_id="graph-content-filter", component_property="value"),
 )
 def suggest_graph_type(value):
-    if value == "Cycle Count" or value == "Rate of Productivity":
-        return (True, False, True)
+    if value == "Cycle Count":
+        return (
+            False,
+            False,
+            False,
+            False,
+            1,
+            "./assets/bargraphhighlight.png",
+            1,
+            "./assets/h2highlight.png",
+        )
     else:
         return (
             False,
             False,
             True,
+            True,
+            0.4,
+            "./assets/bargraph.png",
+            0.4,
+            "./assets/h2.png",
         )
 
 
@@ -1223,7 +1245,7 @@ def tes(value):
     prevent_initial_call=True,
 )
 def update_graph(*args):
-    global tabsname, grapharray, tabCount, activetab
+    global tabsname, grapharray, tabCount, activetab, validlengthforprediction
 
     # selecting arguments: they will be in order as in the callback function
     differentgraphs = args[4:7]
@@ -1464,7 +1486,7 @@ def update_graph(*args):
 
             a = update_tabs()
             return a, None
-    elif ctx.triggered_id == "predictbutton":
+    elif ctx.triggered_id == "predictbutton" and validlengthofdata is True:
         # if user hits predict button
         predict_graph(checked_data)
         a = update_tabs()
